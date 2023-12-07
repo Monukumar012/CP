@@ -66,9 +66,22 @@ class BitManipulation{
         n ^=(1<<i);
     }
 
-    // is N is power of 2
+    // Check N is power of 2
     public boolean isPowerOf2(int n){
         return (n&(n-1))==0;
+    }
+
+
+    // Check N is power of 4 or not
+    public boolean isPowerOf4(int n) {
+        // long poOf4=1;
+        // while(poOf4<=n){
+        //     if(poOf4==n)return true;
+        //     poOf4<<=2L;
+        // }
+        // return false;
+
+        return n>0 && (n & (n-1))==0 && n%3==1;
     }
 
     // Count Set bit in N | TC - O(no. of set bits)
@@ -79,6 +92,23 @@ class BitManipulation{
             cnt++;
         }
         return cnt;
+    }
+
+    // Check all bits are set in given num | 7-> 111
+    public boolean allBitSet(int n){
+        return (n&(n+1))==0;
+    }
+
+    // Check bits in num having in alternative form | 101010 | 010101
+    public boolean isAlternativeBit(int n){
+        // 101010 ^ 010101 (n>>1) = 111111
+        return allBitSet(n^(n>>1));
+    }
+
+    // It gives complement of given n | 10-> 1010 = 0101->5
+    public int findComplement(int n) {
+        // Integer.highestOneBit return num in which LSB bit is set | 1111 -> 8(1000)
+        return ~n & (Integer.highestOneBit(n)-1);
     }
 }
 

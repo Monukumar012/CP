@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class SegmentTree{
+class SegmentTree{
     public int segmentArr[];
     public int N;
     SegmentTree(int n){
@@ -68,6 +68,102 @@ public class SegmentTree{
 }
 
 
+// Segment Tree with Lazy propogation
+class LazySegmentTree{
+    int segArr[],lazy[];
+    int N;
+
+    LazySegmentTree(int n){
+        N=n;
+        segArr=new int[4*n+1];
+        lazy=new int[4*n+1];
+    }
+
+    void build(int arr[]){
+        build(0,0,N-1,arr);
+    }
+
+    void build(int ind, int low, int high, int arr[]){
+        if(low==high){
+            segArr[ind]=arr[low];
+            return;
+        }
+        int mid=low+(high-low)/2;
+
+        build(2*ind+1, low, mid, arr);
+        build(2*ind+2, mid+1, high, arr);
+
+        segArr[ind] = segArr[2*ind+1]+segArr[2*ind+2];
+    }
+
+    void update(int l,int r, int val){
+        update(0, 0, N-1, l, r, val);
+    }
+
+    void update(int ind, int low, int high, int l, int r, int val){
+
+        //No OverLap - [low  high  l  h] | [l  h  low high]
+        if(l>high || r<low)return;
+
+        // Completely OverLap [l  low  high  h]
+        if(low>=l && high<=r){
+            int nodes = high-low+1;
+            segArr[ind]+= nodes*val;
+
+            //Propogate Down if down exist
+            if(low!=high){
+                lazy[2*ind+1] = val;
+                lazy[2*ind+2] = val;
+            }
+            return;
+        }
+
+        int mid=low+(high-low)/2;
+
+        update(2*ind+1, low , mid, l, r, val);
+        update(2*ind+2, mid+1 , high, l, r, val);
+
+        segArr[ind]=segArr[2*ind+1]+segArr[2*ind+2];
+    }
+
+    int query(int l, int r){
+        return query(0, 0, N-1, l, r);
+    }
+
+    int query(int ind, int low, int high, int l, int r){
+
+        // No Overlap
+        if(high<l || low>r)return 0;
+
+        // Completely overlap
+        if(low>=l && high<=r){
+
+            if(lazy[ind]!=0){
+                int nodes = high-low+1;
+                segArr[ind]=nodes*lazy[ind];
+                if(low!=high){
+                    lazy[2*ind+1] = lazy[ind];
+                    lazy[2*ind+2] = lazy[ind];
+                }
+                lazy[ind]=0;
+            }
+            return segArr[ind];
+            
+        }
+
+        // Partialy overlap
+
+        int mid=low+(high-low)/2;
+
+        int left=query(2*ind+1, low, mid, l, r);
+        int right=query(2*ind+2, mid+1, high, l, r);
+        return left+right;
+
+    }
+
+}
+
+
 // for testing segment tree 
 class Main{
 
@@ -76,32 +172,32 @@ class Main{
         int n=sc.nextInt();
         int arr[]=new int[n];
         for(int i=0;i<n;i++)arr[i]=sc.nextInt();
-        SegmentTree seg=new SegmentTree(n);
+        LazySegmentTree seg=new LazySegmentTree(n);
         seg.build(arr);
-
 
         System.out.println("Enter How many query ");
         int t=sc.nextInt();
 
         while(t-->0){
-            System.out.println("Type 1 : for get Maximum in Given Range \nType 2 : for Update value at Index");
+            System.out.println("Type 1 : for get Sum in Given Range \nType 2 : for Update value in Range");
             int type=sc.nextInt();
             if(type==1){
                 System.out.println("Enter Range ");
                 int l=sc.nextInt();
                 int r=sc.nextInt();
-                int max=seg.query(l,r);
+                int sum=seg.query(l,r);
 
-                System.out.println("Max Value B/W "+l+" to "+r+" -> "+max);
+                System.out.println("Sum Value B/W "+l+" to "+r+" -> "+sum);
             }
             else if(type==2){
-                System.out.println("Enter Postion and Value ");
+                System.out.println("Enter range and Value ");
                 int i=sc.nextInt();
+                int r=sc.nextInt();
                 int val=sc.nextInt();
-                seg.update(i,val);
+                seg.update(i,r,val);
 
-                int max=seg.segmentArr[0];
-                System.out.println("After Updating Value "+val+" at "+i+" Max is -> "+max);
+                int sum=seg.segArr[0];
+                System.out.println("After Updating Range "+val+" at "+i+" total Sum is -> "+sum);
             }
             else {
                 System.out.println("Invalid Query");
