@@ -112,6 +112,8 @@ class LazySegmentTree{
                 lazy[2*ind+1] = lazy[ind];
                 lazy[2*ind+2] = lazy[ind];
             }
+
+            lazy[ind]=0;
         }
 
         //No OverLap - [low  high  l  h] | [l  h  low high]
@@ -154,6 +156,8 @@ class LazySegmentTree{
                 lazy[2*ind+1] = lazy[ind];
                 lazy[2*ind+2] = lazy[ind];
             }
+
+            lazy[ind]=0;
         }
 
         // No Overlap
