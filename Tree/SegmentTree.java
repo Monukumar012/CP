@@ -102,6 +102,18 @@ class LazySegmentTree{
 
     void update(int ind, int low, int high, int l, int r, int val){
 
+        // If previous Updates remaining updates those
+        if(lazy[ind]!=0){
+            int nodes = high-low+1;
+            segArr[ind]+= nodes*lazy[ind];
+
+            //Propogate Down if down exist
+            if(low!=high){
+                lazy[2*ind+1] = lazy[ind];
+                lazy[2*ind+2] = lazy[ind];
+            }
+        }
+
         //No OverLap - [low  high  l  h] | [l  h  low high]
         if(l>high || r<low)return;
 
@@ -132,27 +144,28 @@ class LazySegmentTree{
 
     int query(int ind, int low, int high, int l, int r){
 
+        // If previous Updates remaining updates those
+        if(lazy[ind]!=0){
+            int nodes = high-low+1;
+            segArr[ind]+= nodes*lazy[ind];
+
+            //Propogate Down if down exist
+            if(low!=high){
+                lazy[2*ind+1] = lazy[ind];
+                lazy[2*ind+2] = lazy[ind];
+            }
+        }
+
         // No Overlap
         if(high<l || low>r)return 0;
 
         // Completely overlap
         if(low>=l && high<=r){
-
-            if(lazy[ind]!=0){
-                int nodes = high-low+1;
-                segArr[ind]=nodes*lazy[ind];
-                if(low!=high){
-                    lazy[2*ind+1] = lazy[ind];
-                    lazy[2*ind+2] = lazy[ind];
-                }
-                lazy[ind]=0;
-            }
             return segArr[ind];
-            
         }
 
+        
         // Partialy overlap
-
         int mid=low+(high-low)/2;
 
         int left=query(2*ind+1, low, mid, l, r);
