@@ -9,23 +9,10 @@ import java.util.*;
  */
 public class Main{
     static void solve(){
-        int n=sc.nextInt(), q=sc.nextInt();
-
-        long[] pre=new long[n+2];
-        int[] cnt=new int[n+2];
-        
-        while(q-->0){
-            int l=sc.nextInt(), r=sc.nextInt();
-            pre[l]++; pre[r+1]-=r-l+2;
-            cnt[l]++; cnt[r+1]--;
-        }
-        
-        int c=0;
-        for(int i=1;i<=n;i++){
-            pre[i]+=pre[i-1]+c;
-            c+=cnt[i];
-        }
-        out.print( 1, n, pre);
+    // Sample Code
+        int n=sc.nextInt();
+        int[] arr=sc.nextIntArray();
+        out.print("Your Output");
     }
 
     public static void main(String[] args) {
