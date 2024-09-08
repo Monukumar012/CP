@@ -8,11 +8,19 @@ import java.util.*;
  * Note: Use only out.print... methods for printing. Don't use System.out.print...
  */
 public class Main{
+
     static void solve(){
-    // Sample Code
+        //Sample Code START
         int n=sc.nextInt();
-        int[] arr=sc.nextIntArray();
-        out.print("Your Output");
+        int[] arr=sc.nextIntArray(n);
+        int[][] mat=sc.nextIntMatrix(n,n);
+
+        out.debug(n, arr, mat);
+
+        out.print("ans");
+        out.yes(); out.no();
+        //Sample Code END
+
     }
 
     public static void main(String[] args) {
@@ -26,10 +34,39 @@ public class Main{
         System.out.print(out.res);
     }
 
-// Input
-    // public static Scanner sc = new Scanner(System.in);
-    static Mix out = new Mix();
-    static Scanner sc = new Scanner();
+// Utility Object Intiliazation
+    static Mix out = new Mix(); // For CP utility methods or print anything
+    static Scanner sc = new Scanner(); // for input anything
+    // static Graph graph = new Graph(); // for graph utility methods
+
+// Utility Object Declaration
+
+    //static SegmentTree sg;
+    //static LazySegmentTree sg;
+    //static Dsu dsu;
+
+    static class Pair{
+        public int x,y;
+        public Pair(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Pair && ((Pair)obj).x==x && ((Pair)obj).y==y;
+        }
+
+        @Override
+        public String toString() {
+            return x+" "+y;
+        }
+    }
 
     static class Scanner {
         BufferedReader br;
@@ -111,7 +148,7 @@ public class Main{
         int [][] nextIntMatrix(int n,int m){
             int arr[][]=new int[n][m];
             for(int i=0;i<n;i++){
-                for(int j=0;j<n;j++){
+                for(int j=0;j<m;j++){
                     arr[i][j]=nextInt();
                 }
             }
@@ -121,7 +158,7 @@ public class Main{
         long [][] nextLongMatrix(int n,int m){
             long arr[][]=new long[n][m];
             for(int i=0;i<n;i++){
-                for(int j=0;j<n;j++){
+                for(int j=0;j<m;j++){
                     arr[i][j]=nextLong();
                 }
             }
@@ -131,7 +168,7 @@ public class Main{
         double [][] nextDobuleMatrix(int n,int m){
             double arr[][]=new double[n][m];
             for(int i=0;i<n;i++){
-                for(int j=0;j<n;j++){
+                for(int j=0;j<m;j++){
                     arr[i][j]=nextDouble();
                 }
             }
@@ -141,7 +178,7 @@ public class Main{
         char [][] nextCharMatrix(int n,int m){
             char arr[][]=new char[n][m];
             for(int i=0;i<n;i++){
-                for(int j=0;j<n;j++){
+                for(int j=0;j<m;j++){
                     arr[i][j]=next().charAt(0);
                 }
             }
@@ -229,6 +266,8 @@ public class Main{
 
     static class Mix{
 
+        public int E5=(int)1e5;
+        public int E6=(int)1e6;
         public long MOD=(long)1e9+7;
         public StringBuilder res=new StringBuilder();
 
@@ -396,6 +435,14 @@ public class Main{
             }
             return rev;
         }
+    // Check if its remainder when divided by 1 is 0
+        public boolean isInteger(double n) {
+            return n % 1 == 0;
+        }
+        public boolean isApproximatelyInteger(double number) {
+            final double TOLERANCE = 1e-10; // Adjust tolerance as needed
+            return Math.abs(number - Math.round(number)) < TOLERANCE;
+        }
     // Check given is palindrompe or not
         public boolean isPalindrome(String s, int i, int j){
             while(i<j){
@@ -500,6 +547,11 @@ public class Main{
                 ans %=mod;
             }
             return ans;
+        }
+
+    // Log base 2 of n
+        public double log2(double n){
+            return Math.log(n)/Math.log(2.0);
         }
     //Lower Bound - Smallest Index i a[i]>=x
         public int lowerBound(List<Integer> arr, int n, int x){
@@ -834,6 +886,254 @@ public class Main{
     
             // Update root after updating [2*ind+1] or [2*ind+2]
             segmentArr[ind]=segmentArr[2*ind+1]+segmentArr[2*ind+2];
+        }
+    }
+
+/**
+ * Segment Tree with Lazy propogation Template 
+ * Get Sum in range.
+ */
+    static class LazySegmentTree{
+        long segArr[],lazy[];
+        int N;
+        LazySegmentTree(int n){
+            N=n;
+            segArr=new long[4*n+1];
+            lazy=new long[4*n+1];
+        }
+        void build(long arr[]){
+            build(0,0,N-1,arr);
+        }
+        void build(int ind, int low, int high, long arr[]){
+            if(low==high){
+                segArr[ind]=arr[low];
+                return;
+            }
+            int mid=low+(high-low)/2;
+
+            build(2*ind+1, low, mid, arr);
+            build(2*ind+2, mid+1, high, arr);
+
+            segArr[ind] = segArr[2*ind+1]+segArr[2*ind+2];
+        }
+        void update(int l,int r, long val){
+            update(0, 0, N-1, l, r, val);
+        }
+        void update(int ind, int low, int high, int l, int r, long val){
+            // If previous Updates remaining updates those
+            if(lazy[ind]!=0){
+                int nodes = high-low+1;
+                segArr[ind]+= nodes*lazy[ind];
+
+                //Propogate Down if down exist
+                if(low!=high){
+                    lazy[2*ind+1] = lazy[ind];
+                    lazy[2*ind+2] = lazy[ind];
+                }
+
+                lazy[ind]=0;
+            }
+            //No OverLap - [low  high  l  h] | [l  h  low high]
+            if(l>high || r<low)return;
+
+            // Completely OverLap [l  low  high  h]
+            if(low>=l && high<=r){
+                int nodes = high-low+1;
+                segArr[ind]+= nodes*val;
+
+                //Propogate Down if down exist
+                if(low!=high){
+                    lazy[2*ind+1] = val;
+                    lazy[2*ind+2] = val;
+                }
+                return;
+            }
+
+            int mid=low+(high-low)/2;
+
+            update(2*ind+1, low , mid, l, r, val);
+            update(2*ind+2, mid+1 , high, l, r, val);
+
+            segArr[ind]=segArr[2*ind+1]+segArr[2*ind+2];
+        }
+        long query(int l, int r){
+            return query(0, 0, N-1, l, r);
+        }
+        long query(int ind, int low, int high, int l, int r){
+            // If previous Updates remaining updates those
+            if(lazy[ind]!=0){
+                int nodes = high-low+1;
+                segArr[ind]+= nodes*lazy[ind];
+
+                //Propogate Down if down exist
+                if(low!=high){
+                    lazy[2*ind+1] = lazy[ind];
+                    lazy[2*ind+2] = lazy[ind];
+                }
+
+                lazy[ind]=0;
+            }
+
+            // No Overlap
+            if(high<l || low>r)return 0;
+
+            // Completely overlap
+            if(low>=l && high<=r){
+                return segArr[ind];
+            }
+            
+            // Partialy overlap
+            int mid=low+(high-low)/2;
+
+            long left=query(2*ind+1, low, mid, l, r);
+            long right=query(2*ind+2, mid+1, high, l, r);
+            return left+right;
+        }
+    }
+
+/**
+ * Disjoint Set Union
+ */
+    static class Dsu{
+        int size[],par[];
+        Dsu(int n){
+            size=new int[n+1];
+            par=new int[n+1];
+            for(int i=0;i<n;i++){
+                par[i]=i;
+                size[i]=1;
+            }  
+        }
+        // find uplimate parrent - root/boss
+        int find(int u){
+            if(u==par[u])return u;
+            return par[u]=find(par[u]);
+        }
+    
+        void union(int u ,int v){
+            int upu=find(u),upv=find(v);
+            if(upu==upv)return;
+    
+            if(size[upu]>size[upv]){
+                par[upv]=upu;
+                size[upu]+=size[upv];
+            }
+            else{
+                par[upu]=upv;
+                size[upv]+=size[upu];
+            }
+        }
+    } 
+    
+/**
+ * Graph Utility methods = dijkstra, build adjency list from edges
+ */
+    static class Graph{
+    // Build Adjancey List From edges
+        List<List<Integer>> buildAdjancey(int edges[][],int n){
+            List<List<Integer>> adj=new ArrayList<>();
+            for(int i=0;i<=n;i++)adj.add(new ArrayList<>());
+    
+            for(int e[]:edges){
+                adj.get(e[0]).add(e[1]);
+                adj.get(e[1]).add(e[0]);
+            }
+    
+            return adj;
+        }
+    
+    // Build Adjancey List From edges with cost/weight
+        List<List<int[]>> buildAdjanceyWithCost(int edges[][],int n){
+            List<List<int[]>> adj=new ArrayList<>();
+            for(int i=0;i<=n;i++)adj.add(new ArrayList<>());
+    
+            for(int e[]:edges){
+                adj.get(e[0]).add(new int[]{e[1],e[2]});
+                adj.get(e[1]).add(new int[]{e[0],e[2]});
+            }
+    
+            return adj;
+        }
+
+    // src to dest shortest path
+        int dijkstra(int src,int dest, List<List<int[]>> adj,int n){
+            int dis[]=new int[n];
+            Arrays.fill(dis, (int)1e9);
+
+            Queue<int[]> pq=new PriorityQueue<>((a,b)->a[1]-b[1]);
+            pq.add(new int[]{src,0});
+            dis[src]=0;
+
+            while(!pq.isEmpty()){
+                int u=pq.peek()[0], cost = pq.poll()[1];
+
+                if(u==dest)return cost;
+
+                for(int p[] : adj.get(u)){
+                    int v=p[0], currCost=p[1];
+
+                    if(dis[v]>dis[u]+currCost){
+                        dis[v]=dis[u]+currCost;
+                        pq.add(new int[]{v, dis[v]});
+                    }
+                }
+            }
+            return -1;
+        }
+
+    // src to dest shortest path with at max using k edges
+        int dijkstra(int src,int dest, int k, List<List<int[]>> adj,int n){
+            int dis[]=new int[n];
+            Arrays.fill(dis, (int)1e9);
+
+            Queue<int[]> pq=new LinkedList<>();
+            pq.add(new int[]{src,k,0});
+            dis[src]=0;
+
+            while(!pq.isEmpty()){
+                int u=pq.peek()[0], kk=pq.poll()[1];
+
+                if(kk==0)continue;
+
+                for(int p[] : adj.get(u)){
+                    int v=p[0], currCost=p[1];
+
+                    if(kk>0 && dis[v]>dis[u]+currCost){
+                        dis[v]=dis[u]+currCost;
+                        pq.add(new int[]{v, kk-1});
+                    }
+                }
+            }
+            return dis[dest] == (int)1e9 ? -1 : dis[dest];
+        }
+
+
+    // get src to all dest shortest path array
+        int[] dijkstra(int src, List<List<int[]>> adj,int n){
+            int dis[]=new int[n];
+            Arrays.fill(dis, Integer.MAX_VALUE);
+
+            Queue<int[]> pq=new PriorityQueue<>((a,b)->a[0]-b[0]);
+            pq.add(new int[]{0, src});
+            dis[src]=0;
+
+            while(!pq.isEmpty()){
+                int cost=pq.peek()[0];
+                int u=pq.poll()[1];
+                
+                if(cost>dis[u])continue;
+                
+
+                for(int p[] : adj.get(u)){
+                    int v=p[0], currCost=p[1];
+
+                    if(dis[v]>dis[u]+currCost){
+                        dis[v]=dis[u]+currCost;
+                        pq.add(new int[]{dis[v], v});
+                    }
+                }
+            }
+            return dis;
         }
     }
 }
