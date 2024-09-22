@@ -5,7 +5,7 @@ import java.util.*;
  * @author [Monu Kumar]
  *         sc is used to take any type of input => int, long, intArray,
  *         longArray etc.
- *         out is used for print any thing => int, string, array and for all
+ *         out is used for print anything => int, string, array and for all
  *         utility methods => seieve, factors, powMod, bits etc.
  *         Note: Use only out.print... methods for printing. Don't use
  *         System.out.print...
@@ -116,7 +116,7 @@ public class Main {
         }
 
         int[] nextIntArray(int n) {
-            int arr[] = new int[n];
+            int[] arr = new int[n];
             for (int i = 0; i < n; i++) {
                 arr[i] = nextInt();
             }
@@ -124,7 +124,7 @@ public class Main {
         }
 
         long[] nextLongArray(int n) {
-            long arr[] = new long[n];
+            long[] arr = new long[n];
             for (int i = 0; i < n; i++) {
                 arr[i] = nextLong();
             }
@@ -132,7 +132,7 @@ public class Main {
         }
 
         double[] nextDoubleArray(int n) {
-            double arr[] = new double[n];
+            double[] arr = new double[n];
             for (int i = 0; i < n; i++) {
                 arr[i] = nextDouble();
             }
@@ -152,7 +152,7 @@ public class Main {
         }
 
         int[][] nextIntMatrix(int n, int m) {
-            int arr[][] = new int[n][m];
+            int[][] arr = new int[n][m];
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++) {
                     arr[i][j] = nextInt();
@@ -162,7 +162,7 @@ public class Main {
         }
 
         long[][] nextLongMatrix(int n, int m) {
-            long arr[][] = new long[n][m];
+            long[][] arr = new long[n][m];
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++) {
                     arr[i][j] = nextLong();
@@ -171,8 +171,8 @@ public class Main {
             return arr;
         }
 
-        double[][] nextDobuleMatrix(int n, int m) {
-            double arr[][] = new double[n][m];
+        double[][] nextDoubleMatrix(int n, int m) {
+            double[][] arr = new double[n][m];
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++) {
                     arr[i][j] = nextDouble();
@@ -182,7 +182,7 @@ public class Main {
         }
 
         char[][] nextCharMatrix(int n, int m) {
-            char arr[][] = new char[n][m];
+            char[][] arr = new char[n][m];
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++) {
                     arr[i][j] = next().charAt(0);
@@ -192,7 +192,7 @@ public class Main {
         }
 
         char[][] nextCharToMatrix(int n, int m) {
-            char arr[][] = new char[n][m];
+            char[][] arr = new char[n][m];
             for (int i = 0; i < n; i++) {
                 arr[i] = next().toCharArray();
             }
@@ -202,7 +202,7 @@ public class Main {
     }
 
     static class MultiSet<E> {
-        private TreeMap<E, Long> map = new TreeMap<>();
+        private final TreeMap<E, Long> map;
 
         public MultiSet() {
             map = new TreeMap<>();
@@ -345,31 +345,31 @@ public class Main {
             res.append(x).append("\n");
         }
 
-        // Print whole array or any number of argument with " " seprated
+        // Print whole array or any number of argument with " " separated
         public void print(int... arr) {
             for (int e : arr)
-                res.append(e + " ");
+                res.append(e).append(" ");
         }
 
         public void print(long... arr) {
             for (long e : arr)
-                res.append(e + " ");
+                res.append(e).append(" ");
         }
 
         // Print array from index l to r
         public void print(int l, int r, int[] arr) {
             while (l <= r)
-                res.append(arr[l++] + " ");
+                res.append(arr[l++]).append(" ");
         }
 
         public void print(int l, int r, long[] arr) {
             while (l <= r)
-                res.append(arr[l++] + " ");
+                res.append(arr[l++]).append(" ");
         }
 
         public void print(int l, int r, double[] arr) {
             while (l <= r)
-                res.append(arr[l++] + " ");
+                res.append(arr[l++]).append(" ");
         }
 
         // Get Max of any number of arguments or array.
@@ -453,7 +453,7 @@ public class Main {
         }
 
         // Check given array is sorted or not from i to j
-        public boolean isSorted(int arr[], int i, int j) {
+        public boolean isSorted(int[] arr, int i, int j) {
             int n = arr.length;
             while (i != j) {
                 if (arr[i % n] > arr[(i + 1) % n])
@@ -478,7 +478,7 @@ public class Main {
         }
 
         // Reverse array from i to j
-        public void reverse(int arr[], int i, int j) {
+        public void reverse(int[] arr, int i, int j) {
             while (i <= j) {
                 int t = arr[i];
                 arr[i] = arr[j];
@@ -488,7 +488,7 @@ public class Main {
             }
         }
 
-        public void reverse(char arr[], int i, int j) {
+        public void reverse(char[] arr, int i, int j) {
             while (i < j) {
                 char t = arr[i];
                 arr[i] = arr[j];
@@ -498,7 +498,7 @@ public class Main {
             }
         }
 
-        public void reverse(long arr[], int i, int j) {
+        public void reverse(long[] arr, int i, int j) {
             while (i < j) {
                 long t = arr[i];
                 arr[i] = arr[j];
@@ -536,7 +536,7 @@ public class Main {
             return Math.abs(number - Math.round(number)) < TOLERANCE;
         }
 
-        // Check given is palindrompe or not
+        // Check given is palindrome or not
         public boolean isPalindrome(String s, int i, int j) {
             while (i < j) {
                 if (s.charAt(i++) != s.charAt(j--))
@@ -545,7 +545,7 @@ public class Main {
             return true;
         }
 
-        public boolean isPalindrome(char s[], int i, int j) {
+        public boolean isPalindrome(char[] s, int i, int j) {
             while (i < j) {
                 if (s[i++] != s[j--])
                     return false;
@@ -553,19 +553,19 @@ public class Main {
             return true;
         }
 
-        public boolean isPalidrompe(long n) {
+        public boolean isPalindrome(long n) {
             return n == reverse(n);
         }
 
         /**
          * Get all palindrome number till n.
-         * Note : Number of Palindrompe up to n = 2*sqrt(n).
-         * for n = 1e5, num of palindrompe is 632
+         * Note : Number of Palindrome up to n = 2*sqrt(n).
+         * for n = 1e5, num of palindrome is 632
          */
-        public List<Long> getPalindrompeNumbers(long n) {
+        public List<Long> getPalindromeNumbers(long n) {
             List<Long> list = new ArrayList<>();
             for (long i = 0; i <= n; i++) {
-                if (isPalidrompe(i))
+                if (isPalindrome(i))
                     list.add(i);
             }
             return list;
@@ -606,7 +606,7 @@ public class Main {
             return factMOD(n, MOD);
         }
 
-        // x muiltiply y with mod = (X*Y)%MOD
+        // x multiply y with mod = (X*Y)%MOD
         public long mulMod(long x, long y, long mod) {
             return (x % mod * y % mod) % mod;
         }
@@ -697,7 +697,7 @@ public class Main {
             return l;
         }
 
-        public int lowerBound(int arr[], int n, int x) {
+        public int lowerBound(int[] arr, int n, int x) {
             int l = 0, h = n - 1;
             while (l <= h) {
                 int m = l + (h - l) / 2;
@@ -709,7 +709,7 @@ public class Main {
             return l;
         }
 
-        public int lowerBound(long arr[], int n, long x) {
+        public int lowerBound(long[] arr, int n, long x) {
             int l = 0, h = n - 1;
             while (l <= h) {
                 int m = l + (h - l) / 2;
@@ -721,7 +721,7 @@ public class Main {
             return l;
         }
 
-        public int lowerBound(double arr[], int n, double x) {
+        public int lowerBound(double[] arr, int n, double x) {
             int l = 0, h = n - 1;
             while (l <= h) {
                 int m = l + (h - l) / 2;
@@ -746,7 +746,7 @@ public class Main {
             return h;
         }
 
-        public int upperBound(int arr[], int n, int x) {
+        public int upperBound(int[] arr, int n, int x) {
             int l = 0, h = n - 1;
             while (l <= h) {
                 int m = l + (h - l) / 2;
@@ -761,7 +761,7 @@ public class Main {
         // Sieve of Eratosthenes
         // TC - N(log(logN)) -> ~O(N)
         public boolean[] sieve(int n) {
-            boolean primes[] = new boolean[n + 1];
+            boolean[] primes = new boolean[n + 1];
 
             // Mark all primes true
             for (int i = 2; i <= n; i++)
@@ -790,7 +790,7 @@ public class Main {
             return true;
         }
 
-        // Calulate gcd of a,b
+        // Calculate gcd of a,b
         public int gcd(int a, int b) {
             if (a == 0)
                 return b;
@@ -875,7 +875,7 @@ public class Main {
             return map;
         }
 
-        // Calculate total number of factors of any number from their primeFatorization
+        // Calculate total number of factors of any number from their primeFactorization
         public long calculateTotalNumberOfFactors(Map<Long, Integer> primeFactors) {
             long totalFactors = 1;
             for (int exponent : primeFactors.values())
@@ -946,7 +946,7 @@ public class Main {
 
         // Check N is power of 4 or not
         public boolean isPowerOf4(int n) {
-            return n > 0 && (n & (n - 1)) == 0 && n % 3 == 1;
+            return n % 3 == 1 && (n & (n - 1)) == 0;
         }
 
         // Count Set bit in N | TC - O(no. of set bits)
@@ -981,98 +981,26 @@ public class Main {
         }
     }
 
+
     /**
-     * Segement Tree Template
+     * Segment Tree with Lazy propagation Template
      * Get Sum in range.
      */
     static class SegmentTree {
-        public long segmentArr[];
-        public int N;
-
-        SegmentTree(int n) {
-            N = n;
-            segmentArr = new long[4 * n + 1];
-        }
-
-        public void build(long arr[]) {
-            build(0, 0, N - 1, arr);
-        }
-
-        public long query(int l, int r) {
-            return query(0, 0, N - 1, l, r);
-        }
-
-        public void update(int i, long val) {
-            update(0, 0, N - 1, i, val);
-        }
-
-        public void build(int ind, int low, int high, long arr[]) {
-            if (low == high) {
-                segmentArr[ind] = arr[low];
-                return;
-            }
-
-            int mid = (low + high) / 2;
-            build(2 * ind + 1, low, mid, arr);
-            build(2 * ind + 2, mid + 1, high, arr);
-
-            segmentArr[ind] = segmentArr[2 * ind + 1] + segmentArr[2 * ind + 2];
-        }
-
-        public long query(int ind, int low, int high, int l, int r) {
-            // Complete Overlap [l low high r]
-            if (low >= l && high <= r)
-                return segmentArr[ind];
-
-            // No Overlap [low high l r] || [l r low high]
-            if (r < low || l > high)
-                return 0;
-
-            // Partially overlap [low l high r] || [l low r high]
-            int mid = low + (high - low) / 2;
-            long left = query(2 * ind + 1, low, mid, l, r);
-            long right = query(2 * ind + 2, mid + 1, high, l, r);
-
-            return left + right;
-        }
-
-        public void update(int ind, int low, int high, int i, long val) {
-            if (low == high) {
-                segmentArr[ind] = val;
-                return;
-            }
-            int mid = low + (high - low) / 2;
-            // Given pos in left
-            if (i <= mid)
-                update(2 * ind + 1, low, mid, i, val);
-            // Given pos in right
-            else
-                update(2 * ind + 2, mid + 1, high, i, val);
-
-            // Update root after updating [2*ind+1] or [2*ind+2]
-            segmentArr[ind] = segmentArr[2 * ind + 1] + segmentArr[2 * ind + 2];
-        }
-    }
-
-    /**
-     * Segment Tree with Lazy propogation Template
-     * Get Sum in range.
-     */
-    static class LazySegmentTree {
-        long segArr[], lazy[];
+        long[] segArr, lazy;
         int N;
 
-        LazySegmentTree(int n) {
+        SegmentTree(int n) {
             N = n;
             segArr = new long[4 * n + 1];
             lazy = new long[4 * n + 1];
         }
 
-        void build(long arr[]) {
+        void build(long[] arr) {
             build(0, 0, N - 1, arr);
         }
 
-        void build(int ind, int low, int high, long arr[]) {
+        private void build(int ind, int low, int high, long[] arr) {
             if (low == high) {
                 segArr[ind] = arr[low];
                 return;
@@ -1085,17 +1013,21 @@ public class Main {
             segArr[ind] = segArr[2 * ind + 1] + segArr[2 * ind + 2];
         }
 
-        void update(int l, int r, long val) {
+        void pointUpdate(int ind, int val){
+            rangeUpdate(ind, ind, val);
+        }
+
+        void rangeUpdate(int l, int r, long val) {
             update(0, 0, N - 1, l, r, val);
         }
 
-        void update(int ind, int low, int high, int l, int r, long val) {
+        private void update(int ind, int low, int high, int l, int r, long val) {
             // If previous Updates remaining updates those
             if (lazy[ind] != 0) {
                 int nodes = high - low + 1;
                 segArr[ind] += nodes * lazy[ind];
 
-                // Propogate Down if down exist
+                // Propagate Down if down exist
                 if (low != high) {
                     lazy[2 * ind + 1] = lazy[ind];
                     lazy[2 * ind + 2] = lazy[ind];
@@ -1112,7 +1044,7 @@ public class Main {
                 int nodes = high - low + 1;
                 segArr[ind] += nodes * val;
 
-                // Propogate Down if down exist
+                // Propagate Down if down exist
                 if (low != high) {
                     lazy[2 * ind + 1] = val;
                     lazy[2 * ind + 2] = val;
@@ -1132,13 +1064,13 @@ public class Main {
             return query(0, 0, N - 1, l, r);
         }
 
-        long query(int ind, int low, int high, int l, int r) {
+        private long query(int ind, int low, int high, int l, int r) {
             // If previous Updates remaining updates those
             if (lazy[ind] != 0) {
                 int nodes = high - low + 1;
                 segArr[ind] += nodes * lazy[ind];
 
-                // Propogate Down if down exist
+                // Propagate Down if down exist
                 if (low != high) {
                     lazy[2 * ind + 1] = lazy[ind];
                     lazy[2 * ind + 2] = lazy[ind];
@@ -1156,7 +1088,7 @@ public class Main {
                 return segArr[ind];
             }
 
-            // Partialy overlap
+            // Partially overlap
             int mid = low + (high - low) / 2;
 
             long left = query(2 * ind + 1, low, mid, l, r);
@@ -1169,7 +1101,7 @@ public class Main {
      * Disjoint Set Union
      */
     static class Dsu {
-        int size[], par[];
+        int[] size, par;
 
         Dsu(int n) {
             size = new int[n + 1];
@@ -1180,7 +1112,7 @@ public class Main {
             }
         }
 
-        // find uplimate parrent - root/boss
+        // find ultimate parent - root/boss
         int find(int u) {
             if (u == par[u])
                 return u;
@@ -1203,16 +1135,16 @@ public class Main {
     }
 
     /**
-     * Graph Utility methods = dijkstra, build adjency list from edges
+     * Graph Utility methods = dijkstra, build adjacency list from edges
      */
     static class Graph {
-        // Build Adjancey List From edges
-        List<List<Integer>> buildAdjancey(int edges[][], int n) {
+        // Build Adjacency List From edges
+        List<List<Integer>> buildAdjacency(int[][] edges, int n) {
             List<List<Integer>> adj = new ArrayList<>();
             for (int i = 0; i <= n; i++)
                 adj.add(new ArrayList<>());
 
-            for (int e[] : edges) {
+            for (int[] e : edges) {
                 adj.get(e[0]).add(e[1]);
                 adj.get(e[1]).add(e[0]);
             }
@@ -1220,13 +1152,13 @@ public class Main {
             return adj;
         }
 
-        // Build Adjancey List From edges with cost/weight
-        List<List<int[]>> buildAdjanceyWithCost(int edges[][], int n) {
+        // Build Adjacency List From edges with cost/weight
+        List<List<int[]>> buildAdjacencyWithCost(int[][] edges, int n) {
             List<List<int[]>> adj = new ArrayList<>();
             for (int i = 0; i <= n; i++)
                 adj.add(new ArrayList<>());
 
-            for (int e[] : edges) {
+            for (int[] e : edges) {
                 adj.get(e[0]).add(new int[] { e[1], e[2] });
                 adj.get(e[1]).add(new int[] { e[0], e[2] });
             }
@@ -1234,9 +1166,9 @@ public class Main {
             return adj;
         }
 
-        // src to dest shortest path
+        // src to dest the shortest path
         int dijkstra(int src, int dest, List<List<int[]>> adj, int n) {
-            int dis[] = new int[n];
+            int[] dis = new int[n];
             Arrays.fill(dis, (int) 1e9);
 
             Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
@@ -1249,7 +1181,7 @@ public class Main {
                 if (u == dest)
                     return cost;
 
-                for (int p[] : adj.get(u)) {
+                for (int[] p : adj.get(u)) {
                     int v = p[0], currCost = p[1];
 
                     if (dis[v] > dis[u] + currCost) {
@@ -1261,9 +1193,9 @@ public class Main {
             return -1;
         }
 
-        // src to dest shortest path with at max using k edges
+        // src to dest the shortest path with at max using k edges
         int dijkstra(int src, int dest, int k, List<List<int[]>> adj, int n) {
-            int dis[] = new int[n];
+            int[] dis = new int[n];
             Arrays.fill(dis, (int) 1e9);
 
             Queue<int[]> pq = new LinkedList<>();
@@ -1276,7 +1208,7 @@ public class Main {
                 if (kk == 0)
                     continue;
 
-                for (int p[] : adj.get(u)) {
+                for (int[] p : adj.get(u)) {
                     int v = p[0], currCost = p[1];
 
                     if (kk > 0 && dis[v] > dis[u] + currCost) {
@@ -1290,7 +1222,7 @@ public class Main {
 
         // get src to all dest shortest path array
         int[] dijkstra(int src, List<List<int[]>> adj, int n) {
-            int dis[] = new int[n];
+            int[] dis = new int[n];
             Arrays.fill(dis, Integer.MAX_VALUE);
 
             Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
@@ -1304,7 +1236,7 @@ public class Main {
                 if (cost > dis[u])
                     continue;
 
-                for (int p[] : adj.get(u)) {
+                for (int[] p : adj.get(u)) {
                     int v = p[0], currCost = p[1];
 
                     if (dis[v] > dis[u] + currCost) {
