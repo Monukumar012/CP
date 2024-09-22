@@ -13,7 +13,7 @@ import java.util.*;
 public class Main {
 
     static void solve() {
-        
+
     }
 
     static long[] preComputeArr;
@@ -50,7 +50,7 @@ public class Main {
     // static LazySegmentTree sg;
     // static Dsu dsu;
 
-    class Pair {
+    static class Pair {
         public int x, y;
 
         public Pair(int x, int y) {
