@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author [Monu Kumar]
@@ -13,22 +14,25 @@ import java.util.*;
 public class Main {
 
     static void solve() {
+        int n=sc.nextInt();
+        int[] arr=sc.nextIntArray(n);
+        int[][] mat=sc.nextIntMatrix(n, n);
 
-    }
+        out.modIntPower(2, 1000000);
+        out.modPower(2, 1000000, out.MOD);
 
-    static long[] preComputeArr;
-    static void preCompute() {
-        int n = out.E5 + 2;
-        preComputeArr = new long[n];
-        int curr = 1;
-        for (int i = 0; i < n; i++) {
-            preComputeArr[i] = curr ^ (curr - 1);
-            ++curr;
-        }
+        out.no().nline().print(arr);
+
+        MultiSet<Integer> multiSet=new MultiSet<>();
+        multiSet.add(1);
+        multiSet.add(2);
+        multiSet.add(1);
+        // {1,1,1,2} -- in sorted order
     }
+    
 
     public static void main(String[] args) {
-        // preCompute();
+        //out.getPrimes(out.E7);
         int t = 1;
         t = sc.nextInt(); // comment this if not given number of test cases
         out.res.setLength(0);
@@ -47,7 +51,6 @@ public class Main {
     // Utility Object Declaration
 
     // static SegmentTree sg;
-    // static LazySegmentTree sg;
     // static Dsu dsu;
 
     static class Pair {
@@ -73,6 +76,76 @@ public class Main {
             return x + " " + y;
         }
     }
+
+    static class Trie {
+        private TrieNode root;
+    
+        public Trie() {
+            root = new TrieNode();
+        }
+
+        public void insertAll(String[] words){
+            for (String word : words) {
+                insert(word);
+            }
+        }
+        public void insertAll(List<String> words){
+            for (String word : words) {
+                insert(word);
+            }
+        }
+        
+        public void insert(String word) {
+            TrieNode trieNode = root;
+            for(char c: word.toCharArray()){
+                if(!trieNode.contains(c)){
+                    trieNode.put(c, new TrieNode());
+                }
+                trieNode = trieNode.get(c);
+            }
+            trieNode.isEnd=true;
+         }
+        
+        public boolean search(String word) {
+            TrieNode trieNode = root;
+            for(char c: word.toCharArray()){
+                trieNode = trieNode.get(c);
+                if(trieNode==null)return false;
+            }
+            return trieNode.isEnd;
+        }
+        
+        public boolean startsWith(String prefix) {
+            TrieNode trieNode = root;
+            for(char c: prefix.toCharArray()){
+                trieNode = trieNode.get(c);
+                if(trieNode==null)return false;
+            }
+            return true;
+        }
+
+        class TrieNode{
+            TrieNode[] child;
+            boolean isEnd;
+            public TrieNode(){
+                child = new TrieNode[26];
+                isEnd=false;
+            }
+        
+            public boolean contains(char c){
+                return child[c-'a'] != null;
+            }
+        
+            public void put(char c, TrieNode node){
+                child[c-'a']=node;
+            }
+        
+            public TrieNode get(char c){
+                return child[c-'a'];
+            }
+        }    
+    }
+        
 
     static class Scanner {
         BufferedReader br;
@@ -203,6 +276,7 @@ public class Main {
 
     static class MultiSet<E> {
         private final TreeMap<E, Long> map;
+        private int size;
 
         public MultiSet() {
             map = new TreeMap<>();
@@ -214,6 +288,7 @@ public class Main {
 
         public void add(E ele) {
             map.merge(ele, 1L, Long::sum);
+            ++size;
         }
 
         public void remove(E ele) {
@@ -224,6 +299,8 @@ public class Main {
                 map.remove(ele);
             else
                 map.merge(ele, -1L, Long::sum);
+
+            --size;
         }
 
         public E lower(E ele) {
@@ -251,11 +328,11 @@ public class Main {
         }
 
         public int size() {
-            return map.size();
+            return size;
         }
 
         public boolean isEmpty() {
-            return map.isEmpty();
+            return size==0;
         }
 
         public boolean contains(Object o) {
@@ -263,17 +340,20 @@ public class Main {
         }
 
         public void clear() {
+            size=0;
             map.clear();
         }
 
         public E pollFirst() {
-            Map.Entry<E, ?> e = map.pollFirstEntry();
-            return (e == null) ? null : e.getKey();
+            E first=first();
+            this.remove(first);
+            return first;
         }
 
         public E pollLast() {
-            Map.Entry<E, ?> e = map.pollLastEntry();
-            return (e == null) ? null : e.getKey();
+            E last=last();
+            this.remove(last);
+            return last;
         }
 
         @Override
@@ -286,8 +366,16 @@ public class Main {
 
         public int E5 = (int) 1e5;
         public int E6 = (int) 1e6;
+        public int E7 = (int) 1e7;
         public long MOD = (long) 1e9 + 7;
         public StringBuilder res = new StringBuilder();
+
+        /*----------------------- */
+        public List<Integer> primeList;
+        public boolean[] primes;
+        public long[] inverseNumbers;
+        public long[] inverseFactorials;
+        public long[] factorials;
 
         /**
          * Use this for debugging
@@ -297,18 +385,65 @@ public class Main {
             System.out.println(Arrays.deepToString(obj));
         }
 
-        // Print yes or no
-        public void yes() {
-            res.append("YES");
+        public void preCompute(int n, long mod) {
+            factorials = factorials(n, mod);
+            inverseFactorials = inverseFactorials(n, mod);
         }
 
-        public void no() {
+        public long nCr(int n, int r, long mod){
+            return out.modMultiply(mod, factorials[n], inverseFactorials[r], inverseFactorials[n-r]);
+        }
+
+        public long[] factorials(int n, long mod) {
+            long[] factorials = new long[n];
+            factorials[0] = 1;
+            for (int i = 1; i < n; i++) {
+                factorials[i] = out.modMultiply(mod, factorials[i-1], i);
+            }
+            return factorials;
+        }
+    
+        public long[] inverseFactorials(int n, long mod) {
+            long[] inverseNumbers = modInverseAll(n, mod);
+            long[] inverseFactorials = new long[n];
+            inverseFactorials[0] = inverseFactorials[1] = 1;
+            for (int i = 1; i < n; i++){
+                inverseFactorials[i] = out.modMultiply(mod, inverseFactorials[i - 1], inverseNumbers[i]);
+            }
+            return inverseFactorials;
+        }
+    
+        
+        public long[] modInverseAll(int n, long mod) {
+            long[] inverseNumbers = new long[n];
+            inverseNumbers[0] = inverseNumbers[1] = 1;
+            for (int i = 2; i < n; i++) {
+                inverseNumbers[i] = inverseNumbers[(int)(mod%i)] * (mod-mod/i)%mod; 
+            }
+            return inverseNumbers;
+        }
+
+        // Moduler Invserse of Number can also be calculated as num^(mod-2);
+        public long modInverse(long n, long mod){
+            return modIntPower(n, mod-2);
+        }
+
+
+        // Print yes or no
+        public Mix yes() {
+            res.append("YES");
+            return out;
+        }
+
+        public Mix no() {
             res.append("NO");
+            return out;
         }
 
         // Print new line
-        public void nline() {
+        public Mix nline() {
             res.append("\n");
+            return out;
         }
 
         // Print element
@@ -427,6 +562,7 @@ public class Main {
             return pre;
         }
 
+        // Get Prefix Array for 2-D array
         public long[][] prefix(int[][] arr, int n, int m) {
             long[][] pre = new long[n + 1][m + 1];
             for (int i = 1; i <= n; i++) {
@@ -477,34 +613,31 @@ public class Main {
             arr[i] ^= arr[j];
         }
 
+        public void swap(int i, int j, char[] arr) {
+            arr[i] ^= arr[j];
+            arr[j] ^= arr[i];
+            arr[i] ^= arr[j];
+        }
+
         // Reverse array from i to j
         public void reverse(int[] arr, int i, int j) {
-            while (i <= j) {
-                int t = arr[i];
-                arr[i] = arr[j];
-                arr[j] = t;
-                i++;
-                j--;
+            while (i < j) {
+                swap(i, j, arr);
+                i++; j--;
             }
         }
 
         public void reverse(char[] arr, int i, int j) {
             while (i < j) {
-                char t = arr[i];
-                arr[i] = arr[j];
-                arr[j] = t;
-                i++;
-                j--;
+                swap(i, j, arr);
+                i++; j--;
             }
         }
 
         public void reverse(long[] arr, int i, int j) {
             while (i < j) {
-                long t = arr[i];
-                arr[i] = arr[j];
-                arr[j] = t;
-                i++;
-                j--;
+                swap(i, j, arr);
+                i++; j--;
             }
         }
 
@@ -518,12 +651,7 @@ public class Main {
         }
 
         public int reverse(int n) {
-            int rev = 0;
-            while (n > 0) {
-                rev = rev * 10 + n % 10;
-                n /= 10;
-            }
-            return rev;
+            return (int)reverse((long)n);
         }
 
         // Check if its remainder when divided by 1 is 0
@@ -586,50 +714,47 @@ public class Main {
             return i >= 0 && i < n && j >= 0 & j < m;
         }
 
+
         // x + y with mod 1e9+7
-        public long sumIntMod(long x, long y) {
+        public long modIntSum(long x, long y) {
+            return modSum(x, y, MOD);
+        }
+
+        public long modSum(long x, long y, long MOD) {
             return (x % MOD + y % MOD) % MOD;
         }
 
         // x multiply y with mod 1e9+7
-        public long mulIntMod(long x, long y) {
-            return mulMod(x, y, MOD);
+        public long modIntMultiply(long x, long y) {
+            return modMultiply(MOD, x, y);
         }
 
         // x power y with mod 1e9+7
-        public long powerIntMod(long x, long y) {
-            return powerMod(x, y, MOD);
+        public long modIntPower(long x, long y) {
+            return modPower(x, y, MOD);
         }
 
         // Factorial of n with MOD 1e9+7
-        public long factIntMOD(long n) {
-            return factMOD(n, MOD);
+        public long modIntFactorial(long n) {
+            return modFactorial(n, MOD);
         }
 
-        // x multiply y with mod = (X*Y)%MOD
-        public long mulMod(long x, long y, long mod) {
-            return (x % mod * y % mod) % mod;
+        // (A%MOD*B%MOD*C%MOD*D%MOD...)%MOD
+        public long modMultiply(long mod, long...nums) {
+            long ans = 1;
+            for (long num : nums) {
+                ans *= (num%mod);
+                ans %= mod;
+            }
+            return ans;
         }
 
         // x power y with mod = (X^Y)%MOD
-        public int powerMod(int x, int y, int mod) {
-            int res = 1;
-            x = x % mod;
-            if (x == 0)
-                return 0;
-            while (y > 0) {
-                if ((y & 1) != 0)
-                    res = (res * x) % mod;
-                y = y >> 1;
-                x = (x * x) % mod;
-            }
-            res %= mod;
-            if (res < 0)
-                res += mod;
-            return res;
+        public int modPower(int x, int y, int mod) {
+            return (int)modPower((long)x, y, mod);
         }
 
-        public long powerMod(long x, long y, long p) {
+        public long modPower(long x, long y, long p) {
             long res = 1;
             x = x % p;
             if (x == 0)
@@ -656,7 +781,7 @@ public class Main {
         }
 
         // Factorial of n with MOD
-        public long factMOD(long n, long mod) {
+        public long modFactorial(long n, long mod) {
             if (n == 0)
                 return 0;
             long ans = 1;
@@ -670,6 +795,19 @@ public class Main {
         // Log base 2 of n
         public double log2(double n) {
             return Math.log(n) / Math.log(2.0);
+        }
+
+        // Lower Bound - Smallest Index i satisfy given predicate condition
+        public int lowerBound(List<Integer> arr, int n, Predicate<Integer> predicate) {
+            int l = 0, h = n - 1;
+            while (l <= h) {
+                int m = l + (h - l) / 2;
+                if (predicate.test(arr.get(m))) {
+                    h = m - 1;
+                } else
+                    l = m + 1;
+            }
+            return l;
         }
 
         // Lower Bound - Smallest Index i a[i]>=x
@@ -761,7 +899,7 @@ public class Main {
         // Sieve of Eratosthenes
         // TC - N(log(logN)) -> ~O(N)
         public boolean[] sieve(int n) {
-            boolean[] primes = new boolean[n + 1];
+            primes = new boolean[n + 1];
 
             // Mark all primes true
             for (int i = 2; i <= n; i++)
@@ -792,9 +930,7 @@ public class Main {
 
         // Calculate gcd of a,b
         public int gcd(int a, int b) {
-            if (a == 0)
-                return b;
-            return gcd(b % a, a);
+            return (int)gcd((long)a, b);
         }
 
         public long gcd(long a, long b) {
@@ -803,31 +939,51 @@ public class Main {
             return gcd(b % a, a);
         }
 
+        public int lcm(int a, int b) {
+            return (int) lcm((long)a, b);
+        }
+
+        public long lcm(long a, long b) {
+            return Math.abs(a*b)/gcd(a,b);
+        }
+
+        // Get all factors/divisors of N
+        public List<Integer> getPrimes(int n) {
+            sieve(n);
+            primeList = new ArrayList<>();
+            for (int i = 2; i <= n; i++) {
+                if (primes[i]) {
+                    primeList.add(i);
+                }
+            }
+            return primeList;
+        }
+
         // Get all factors/divisors of N
         public List<Integer> getFactors(int n) {
-            List<Integer> factor = new ArrayList<>();
+            List<Integer> factorList = new ArrayList<>();
 
             for (int i = 1; i * i <= n; i++) {
                 if (n % i == 0) {
-                    factor.add(i);
+                    factorList.add(i);
                     if (i != n / i)
-                        factor.add(n / i);
+                    factorList.add(n / i);
                 }
             }
-            return factor;
+            return factorList;
         }
 
         public List<Long> getFactors(long n) {
-            List<Long> factor = new ArrayList<>();
+            List<Long> factorList = new ArrayList<>();
 
             for (long i = 1; i * i <= n; i++) {
                 if (n % i == 0) {
-                    factor.add(i);
+                    factorList.add(i);
                     if (i != n / i)
-                        factor.add(n / i);
+                    factorList.add(n / i);
                 }
             }
-            return factor;
+            return factorList;
         }
 
         // Count all factors/divisors of N
@@ -892,7 +1048,7 @@ public class Main {
         // Get all composite numbers till n
         public List<Integer> getCompositeNumbers(int n) {
             List<Integer> list = new ArrayList<>();
-            boolean[] primes = sieve(n);
+            sieve(n);
             for (int i = 0; i < n; i++) {
                 if (!primes[i])
                     list.add(i);
@@ -1013,12 +1169,29 @@ public class Main {
             segArr[ind] = segArr[2 * ind + 1] + segArr[2 * ind + 2];
         }
 
-        void pointUpdate(int ind, int val){
-            rangeUpdate(ind, ind, val);
+        public void pointUpdate(int ind, int val){
+            update(0, 0, N - 1, ind, val);
         }
 
-        void rangeUpdate(int l, int r, long val) {
+        public void rangeUpdate(int l, int r, long val) {
             update(0, 0, N - 1, l, r, val);
+        }
+
+        private void update(int ind, int low, int high, int i, int val){
+            if(low==high){
+                segArr[ind]+=val;
+                return;
+            }
+    
+            int mid=low+(high-low)/2;
+    
+            // Given pos in left
+            if(i<=mid) update(2*ind+1, low, mid, i, val);
+            // Given pos in right
+            else update(2*ind+2, mid+1, high, i, val);
+    
+            // Update root after updating [2*ind+1] or [2*ind+2]
+            segArr[ind]=segArr[2*ind+1] + segArr[2*ind+2];
         }
 
         private void update(int ind, int low, int high, int l, int r, long val) {
