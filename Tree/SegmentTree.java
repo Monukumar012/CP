@@ -70,20 +70,17 @@ class SegmentTree{
 
 // Segment Tree with Lazy propogation
 class LazySegmentTree{
-    int segArr[],lazy[];
+    long segArr[],lazy[];
     int N;
-
     LazySegmentTree(int n){
         N=n;
         segArr=new int[4*n+1];
         lazy=new int[4*n+1];
     }
-
-    void build(int arr[]){
+    void build(long arr[]){
         build(0,0,N-1,arr);
     }
-
-    void build(int ind, int low, int high, int arr[]){
+    void build(int ind, int low, int high, long arr[]){
         if(low==high){
             segArr[ind]=arr[low];
             return;
@@ -95,13 +92,10 @@ class LazySegmentTree{
 
         segArr[ind] = segArr[2*ind+1]+segArr[2*ind+2];
     }
-
-    void update(int l,int r, int val){
+    void update(int l,int r, long val){
         update(0, 0, N-1, l, r, val);
     }
-
-    void update(int ind, int low, int high, int l, int r, int val){
-
+    void update(int ind, int low, int high, int l, int r, long val){
         // If previous Updates remaining updates those
         if(lazy[ind]!=0){
             int nodes = high-low+1;
@@ -115,7 +109,6 @@ class LazySegmentTree{
 
             lazy[ind]=0;
         }
-
         //No OverLap - [low  high  l  h] | [l  h  low high]
         if(l>high || r<low)return;
 
@@ -139,13 +132,10 @@ class LazySegmentTree{
 
         segArr[ind]=segArr[2*ind+1]+segArr[2*ind+2];
     }
-
-    int query(int l, int r){
+    long query(int l, int r){
         return query(0, 0, N-1, l, r);
     }
-
-    int query(int ind, int low, int high, int l, int r){
-
+    long query(int ind, int low, int high, int l, int r){
         // If previous Updates remaining updates those
         if(lazy[ind]!=0){
             int nodes = high-low+1;
@@ -167,17 +157,14 @@ class LazySegmentTree{
         if(low>=l && high<=r){
             return segArr[ind];
         }
-
         
         // Partialy overlap
         int mid=low+(high-low)/2;
 
-        int left=query(2*ind+1, low, mid, l, r);
-        int right=query(2*ind+2, mid+1, high, l, r);
+        long left=query(2*ind+1, low, mid, l, r);
+        long right=query(2*ind+2, mid+1, high, l, r);
         return left+right;
-
     }
-
 }
 
 

@@ -55,24 +55,29 @@ public class Dijkstra {
         return dis[dest] == (int)1e9 ? -1 : dis[dest];
     }
 
+
     // get src to all dest shotest path array
     int[] dijkstra(int src, List<List<int[]>> adj,int n){
         int dis[]=new int[n];
-        Arrays.fill(dis, (int)1e9);
+        Arrays.fill(dis, Integer.MAX_VALUE);
 
-        Queue<Integer> pq=new LinkedList<>();
-        pq.add(src);
+        Queue<int[]> pq=new PriorityQueue<>((a,b)->a[0]-b[0]);
+        pq.add(new int[]{0, src});
         dis[src]=0;
 
         while(!pq.isEmpty()){
-            int u=pq.poll();
+            int cost=pq.peek()[0];
+            int u=pq.poll()[1];
+            
+            if(cost>dis[u])continue;
+            
 
             for(int p[] : adj.get(u)){
                 int v=p[0], currCost=p[1];
 
                 if(dis[v]>dis[u]+currCost){
                     dis[v]=dis[u]+currCost;
-                    pq.add(v);
+                    pq.add(new int[]{dis[v], v});
                 }
             }
         }
