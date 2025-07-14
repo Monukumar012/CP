@@ -74,8 +74,8 @@ class LazySegmentTree{
     int N;
     LazySegmentTree(int n){
         N=n;
-        segArr=new int[4*n+1];
-        lazy=new int[4*n+1];
+        segArr=new long[4*n+1];
+        lazy=new long[4*n+1];
     }
     void build(long arr[]){
         build(0,0,N-1,arr);
@@ -174,7 +174,7 @@ class Main{
     static Scanner sc=new Scanner(System.in);
     public static void main(String[] args) {
         int n=sc.nextInt();
-        int arr[]=new int[n];
+        long arr[]=new long[n];
         for(int i=0;i<n;i++)arr[i]=sc.nextInt();
         LazySegmentTree seg=new LazySegmentTree(n);
         seg.build(arr);
@@ -189,7 +189,7 @@ class Main{
                 System.out.println("Enter Range ");
                 int l=sc.nextInt();
                 int r=sc.nextInt();
-                int sum=seg.query(l,r);
+                long sum=seg.query(l,r);
 
                 System.out.println("Sum Value B/W "+l+" to "+r+" -> "+sum);
             }
@@ -200,7 +200,7 @@ class Main{
                 int val=sc.nextInt();
                 seg.update(i,r,val);
 
-                int sum=seg.segArr[0];
+                long sum=seg.segArr[0];
                 System.out.println("After Updating Range "+val+" at "+i+" total Sum is -> "+sum);
             }
             else {

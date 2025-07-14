@@ -982,16 +982,16 @@ public class Main {
         }
 
         // Check For Prime
-        public boolean isPrime(int n) {
-            if (n <= 1)
-                return false;
-
-            for (int i = 2; i * i <= n; i++) {
-                if (n % i == 0)
+            public boolean isPrime(int n) {
+                if (n <= 1)
                     return false;
+
+                for (int i = 2; i * i <= n; i++) {
+                    if (n % i == 0)
+                        return false;
+                }
+                return true;
             }
-            return true;
-        }
 
         // Calculate gcd of a,b
         public int gcd(int a, int b) {
@@ -1215,7 +1215,6 @@ public class Main {
         static enum OperationType {
             MIN, MAX, SUM, GCD
         }
-
         SegmentTree(int n) {
             this(n, OperationType.SUM);
         }
@@ -1227,10 +1226,9 @@ public class Main {
             this.opType = opType;
         }
 
-        void build(int[] arr) {
+        void build(int[] arr){
             build(Arrays.stream(arr).asLongStream().toArray());
         }
-
         void build(long[] arr) {
             build(0, 0, N - 1, arr);
         }
@@ -1517,14 +1515,4 @@ public class Main {
             return dis;
         }
     }
-
-    /**
-     * @author [Monu Kumar]
-     *         sc is used to take any type of input => int, long, intArray,
-     *         longArray etc.
-     *         out is used for print anything => int, string, array and for all
-     *         utility methods => seieve, factors, powMod, bits etc.
-     *         Note: Use only out.print... methods for printing. Don't use
-     *         System.out.print...
-     */
 }
