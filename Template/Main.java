@@ -1813,15 +1813,17 @@ public class Main {
     }
 
     static class RollingHash {
-        private final long MOD;
-        private final long P;
+        private static final long MOD = (long)1e9 + 7;
+        private long P = 31;
         private long hash;
         private final long MAX_POW;
 
-        public RollingHash(long windowSize, long p, long MOD) {
-            this.P = p;
-            this.MOD = MOD;
+        public RollingHash(long windowSize) {
             this.MAX_POW = modPower(P, windowSize - 1, MOD);
+        }
+        public RollingHash(long windowSize, long p) {
+            this(windowSize);
+            this.P = p;
         }
 
         public long getHash() {
@@ -1852,14 +1854,17 @@ public class Main {
     }
 
     static class DoubleRollingHash extends RollingHash {
-        private final long MOD;
-        private final long P;
+        private final long MOD = (long)1e9 + 9;
+        private long P = 37;
         private long hash;
         private final long MAX_POW;
 
-        public DoubleRollingHash(long windowSize, long p1, long p2, long MOD_1, long MOD_2) {
-            super(windowSize, p1, MOD_1);
-            this.MOD = MOD_2;
+        public DoubleRollingHash(long windowSize) {
+            super(windowSize);
+            this.MAX_POW = modPower(P, windowSize - 1, MOD);
+        }
+        public DoubleRollingHash(long windowSize, long p1, long p2) {
+            super(windowSize, p1);
             this.P = p2;
             this.MAX_POW = modPower(P, windowSize - 1, MOD);
         }
