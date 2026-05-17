@@ -2,21 +2,19 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Predicate;
 
+
 /**
  * @author [Monu Kumar]
- *         sc is used to take any type of input => int, long, intArray,
- *         longArray etc.
- *         out is used for print anything => int, string, array and for all
- *         utility methods => seieve, factors, powMod, bits etc.
- *         Note: Use only out.print... methods for printing. Don't use
- *         System.out.print...
+ * sc is used to take any type of input => int, long, intArray,
+ * longArray etc.
+ * out is used for print anything => int, string, array and for all
+ * utility methods => seieve, factors, powMod, bits etc.
+ * Note: Use only out.print... methods for printing. Don't use
+ * System.out.print...
  */
 
 public class Main {
-    static void solve() {
-        int n = sc.nextInt();
-        int[] arr = sc.nextIntArray(n);
-
+    static void solve(int testCaseNum) {
     }
 
     public static void main(String[] args) {
@@ -24,11 +22,11 @@ public class Main {
         int t = 1;
         t = sc.nextInt(); // comment this if not given number of test cases
         out.res.setLength(0);
-        while (t-- > 0) {
-            solve();
+        for (int i = 0; i < t; i++) {
+            solve(i + 1);
             out.nline();
         }
-        System.out.print(out.res);
+        System.out.print(out.res.toString().trim());
     }
 
     // Utility Object Initialization
@@ -42,26 +40,12 @@ public class Main {
     // static Dsu dsu;
 
     static class Pair {
-        public long x, y;
+        public int x;
+        private StringBuilder y;
 
-        public Pair(long x, long y) {
+        public Pair(int x, StringBuilder y) {
             this.x = x;
             this.y = y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Pair && ((Pair) obj).x == x && ((Pair) obj).y == y;
-        }
-
-        @Override
-        public String toString() {
-            return x + " " + y;
         }
     }
 
@@ -115,7 +99,7 @@ public class Main {
             return true;
         }
 
-        class TrieNode {
+        static class TrieNode {
             TrieNode[] child;
             boolean isEnd;
 
@@ -377,8 +361,8 @@ public class Main {
         }
 
         public void preCompute(boolean primes, boolean primesList, boolean factorials, boolean inverseFactorials,
-                boolean power2, int n,
-                long mod) {
+                               boolean power2, int n,
+                               long mod) {
             if (primes)
                 sieve(n);
             if (primesList)
@@ -433,7 +417,7 @@ public class Main {
             return inverseNumbers;
         }
 
-        // Moduler Invserse of Number can also be calculated as num^(mod-2);
+        // Module Inverse of Number can also be calculated as num^(mod-2);
         public long modInverse(long n, long mod) {
             return modIntPower(n, mod - 2);
         }
@@ -713,7 +697,7 @@ public class Main {
         }
 
         public int reverse(int n) {
-            return (int) reverse(n);
+            return (int) reverse((long) n);
         }
 
         // Check if its remainder when divided by 1 is 0
@@ -982,16 +966,16 @@ public class Main {
         }
 
         // Check For Prime
-            public boolean isPrime(int n) {
-                if (n <= 1)
-                    return false;
+        public boolean isPrime(int n) {
+            if (n <= 1)
+                return false;
 
-                for (int i = 2; i * i <= n; i++) {
-                    if (n % i == 0)
-                        return false;
-                }
-                return true;
+            for (int i = 2; i * i <= n; i++) {
+                if (n % i == 0)
+                    return false;
             }
+            return true;
+        }
 
         // Calculate gcd of a,b
         public int gcd(int a, int b) {
@@ -1208,29 +1192,41 @@ public class Main {
      * Get Sum in range.
      */
     static class SegmentTree {
-        long[] segArr, lazy;
+        long[] segArr;
         int N;
-        private OperationType opType;
+        SegmentOperator segmentOperator;
 
-        static enum OperationType {
-            MIN, MAX, SUM, GCD
-        }
-        SegmentTree(int n) {
+
+        public SegmentTree(int n) {
             this(n, OperationType.SUM);
         }
 
-        SegmentTree(int n, OperationType opType) {
+        public SegmentTree(int n, OperationType opType) {
             N = n;
             segArr = new long[4 * n + 1];
-            lazy = new long[4 * n + 1];
-            this.opType = opType;
+            this.segmentOperator = getSegmentOperator(opType);
         }
 
-        void build(int[] arr){
+        public SegmentTree(int n, SegmentOperator segmentOperator) {
+            N = n;
+            segArr = new long[4 * n + 1];
+            this.segmentOperator = segmentOperator;
+        }
+
+        public void build(int[] arr) {
             build(Arrays.stream(arr).asLongStream().toArray());
         }
-        void build(long[] arr) {
+
+        public void build(long[] arr) {
             build(0, 0, N - 1, arr);
+        }
+
+        public void pointUpdate(int ind, int val) {
+            update(0, 0, N - 1, ind, val);
+        }
+
+        public long query(int l, int r) {
+            return query(0, 0, N - 1, l, r);
         }
 
         private void build(int ind, int low, int high, long[] arr) {
@@ -1246,94 +1242,29 @@ public class Main {
             segArr[ind] = combine(segArr[2 * ind + 1], segArr[2 * ind + 2]);
         }
 
-        public void pointUpdate(int ind, int val) {
-            update(0, 0, N - 1, ind, val);
-        }
-
-        public void rangeUpdate(int l, int r, long val) {
-            update(0, 0, N - 1, l, r, val);
-        }
-
         private void update(int ind, int low, int high, int i, int val) {
             if (low == high) {
-                segArr[ind] += val;
+                segArr[ind] = segmentOperator.apply(segArr[ind], val);
                 return;
             }
 
             int mid = low + (high - low) / 2;
-
             // Given pos in left
-            if (i <= mid)
+            if (i <= mid) {
                 update(2 * ind + 1, low, mid, i, val);
+            }
             // Given pos in right
-            else
+            else {
                 update(2 * ind + 2, mid + 1, high, i, val);
-
+            }
             // Update root after updating [2*ind+1] or [2*ind+2]
             segArr[ind] = combine(segArr[2 * ind + 1], segArr[2 * ind + 2]);
         }
 
-        private void update(int ind, int low, int high, int l, int r, long val) {
-            // If previous Updates remaining updates those
-            if (lazy[ind] != 0) {
-                int nodes = high - low + 1;
-                segArr[ind] += nodes * lazy[ind];
-
-                // Propagate Down if down exist
-                if (low != high) {
-                    lazy[2 * ind + 1] = lazy[ind];
-                    lazy[2 * ind + 2] = lazy[ind];
-                }
-
-                lazy[ind] = 0;
-            }
-            // No OverLap - [low high l h] | [l h low high]
-            if (l > high || r < low)
-                return;
-
-            // Completely OverLap [l low high h]
-            if (low >= l && high <= r) {
-                int nodes = high - low + 1;
-                segArr[ind] += nodes * val;
-
-                // Propagate Down if down exist
-                if (low != high) {
-                    lazy[2 * ind + 1] = val;
-                    lazy[2 * ind + 2] = val;
-                }
-                return;
-            }
-
-            int mid = low + (high - low) / 2;
-
-            update(2 * ind + 1, low, mid, l, r, val);
-            update(2 * ind + 2, mid + 1, high, l, r, val);
-
-            segArr[ind] = combine(segArr[2 * ind + 1], segArr[2 * ind + 2]);
-        }
-
-        long query(int l, int r) {
-            return query(0, 0, N - 1, l, r);
-        }
-
-        private long query(int ind, int low, int high, int l, int r) {
-            // If previous Updates remaining updates those
-            if (lazy[ind] != 0) {
-                int nodes = high - low + 1;
-                segArr[ind] += nodes * lazy[ind];
-
-                // Propagate Down if down exist
-                if (low != high) {
-                    lazy[2 * ind + 1] = lazy[ind];
-                    lazy[2 * ind + 2] = lazy[ind];
-                }
-
-                lazy[ind] = 0;
-            }
-
+        long query(int ind, int low, int high, int l, int r) {
             // No Overlap
             if (high < l || low > r)
-                return 0;
+                return segmentOperator.defaultValue();
 
             // Completely overlap
             if (low >= l && high <= r) {
@@ -1348,19 +1279,326 @@ public class Main {
             return combine(left, right);
         }
 
-        private long combine(long a, long b) {
-            return switch (opType) {
-                case SUM -> a + b;
-                case MIN -> Math.min(a, b);
-                case MAX -> Math.max(a, b);
-                case GCD -> gcd(a, b);
-            };
+        long combine(long a, long b) {
+            return segmentOperator.apply(a, b);
         }
 
-        private long gcd(long a, long b) {
-            if (a == 0)
+        long gcd(long a, long b) {
+            if (a == 0) {
                 return b;
+            }
             return gcd(b % a, a);
+        }
+
+
+        // Extra stuff
+        private interface SegmentOperator {
+            long apply(long a, long b);
+
+            long defaultValue();
+        }
+
+        public enum OperationType {
+            MIN, MAX, SUM, GCD
+        }
+
+        private SegmentOperator getSegmentOperator(OperationType opType) {
+            return switch (opType) {
+                case SUM -> new SegmentOperator() {
+                    public long apply(long a, long b) {
+                        return a + b;
+                    }
+
+                    public long defaultValue() {
+                        return 0;
+                    }
+                };
+                case MIN -> new SegmentOperator() {
+                    public long apply(long a, long b) {
+                        return Math.min(a, b);
+                    }
+
+                    public long defaultValue() {
+                        return Long.MAX_VALUE;
+                    }
+                };
+                case MAX -> new SegmentOperator() {
+                    public long apply(long a, long b) {
+                        return Math.max(a, b);
+                    }
+
+                    public long defaultValue() {
+                        return Long.MIN_VALUE;
+                    }
+                };
+                case GCD -> new SegmentOperator() {
+                    public long apply(long a, long b) {
+                        return gcd(a, b);
+                    }
+
+                    public long defaultValue() {
+                        return 0;
+                    }
+                };
+            };
+        }
+    }
+
+    static class SegmentTreeLazy extends SegmentTree {
+        long[] lazy;
+
+        public SegmentTreeLazy(int n) {
+            this(n, OperationType.SUM);
+        }
+
+        public SegmentTreeLazy(int n, OperationType opType) {
+            super(n, opType);
+            lazy = new long[4 * n + 1];
+        }
+
+        public void rangeUpdate(int l, int r, long val) {
+            update(0, 0, N - 1, l, r, val);
+        }
+
+        private void update(int ind, int low, int high, int l, int r, long val) {
+            // If previous Updates remaining updates those
+            updateAndPropagateDown(ind, low, high);
+            // No OverLap - [low high l h] | [l h low high]
+            if (l > high || r < low) {
+                return;
+            }
+
+            // Completely OverLap [l low high h]
+            if (low >= l && high <= r) {
+                int nodes = high - low + 1;
+                segArr[ind] = combine(segArr[ind], nodes * val);
+
+                propagateDown(ind, low, high);
+                return;
+            }
+
+            int mid = low + (high - low) / 2;
+
+            update(2 * ind + 1, low, mid, l, r, val);
+            update(2 * ind + 2, mid + 1, high, l, r, val);
+
+            segArr[ind] = combine(segArr[2 * ind + 1], segArr[2 * ind + 2]);
+        }
+
+        @Override
+        long query(int ind, int low, int high, int l, int r) {
+            // If previous Updates remaining updates those
+            updateAndPropagateDown(ind, low, high);
+            // No Overlap
+            if (high < l || low > r)
+                return segmentOperator.defaultValue();
+
+            // Completely overlap
+            if (low >= l && high <= r) {
+                return segArr[ind];
+            }
+
+            // Partially overlap
+            int mid = low + (high - low) / 2;
+
+            long left = query(2 * ind + 1, low, mid, l, r);
+            long right = query(2 * ind + 2, mid + 1, high, l, r);
+            return combine(left, right);
+        }
+
+        private void updateAndPropagateDown(int ind, int low, int high) {
+            if (lazy[ind] != 0) {
+                int nodes = high - low + 1;
+                segArr[ind] = combine(segArr[ind], nodes * lazy[ind]);
+
+                propagateDown(ind, low, high);
+            }
+        }
+
+        // Propagate Down if down exist
+        private void propagateDown(int ind, int low, int high) {
+            if (low != high) {
+                lazy[2 * ind + 1] = lazy[ind];
+                lazy[2 * ind + 2] = lazy[ind];
+            }
+
+            lazy[ind] = 0;
+        }
+    }
+
+    /**
+     * Segment Tree with MergeSort
+     * Get sum of elements which is (<x, <=x, >x, >=x)
+     */
+    static class SegmentTreeMergeSort {
+        static class Node {
+            List<Long> elements;
+            List<Long> prefix;
+
+            public Node() {
+                elements = new ArrayList<>();
+                prefix = new ArrayList<>();
+            }
+
+            public Node(long ele) {
+                this();
+                elements.add(ele);
+                prefix.add(ele);
+            }
+
+            static Node empty() {
+                return new Node();
+            }
+
+            int size() {
+                return elements.size();
+            }
+
+            long totalSum() {
+                if (prefix.isEmpty()) {
+                    return 0;
+                }
+                return prefix.getLast();
+            }
+
+            // sum from index l to r (inclusive)
+            long sumRange(int l, int r) {
+                if (l > r || l < 0 || r >= prefix.size()) {
+                    return 0;
+                }
+                if (l == 0) {
+                    return prefix.get(r);
+                }
+                return prefix.get(r) - prefix.get(l - 1);
+            }
+
+            // first index >= x
+            int lowerBound(long x) {
+                int l = 0, r = elements.size();
+                while (l < r) {
+                    int mid = (l + r) >>> 1;
+                    if (elements.get(mid) >= x) r = mid;
+                    else l = mid + 1;
+                }
+                return l;
+            }
+
+            // first index > x
+            int upperBound(long x) {
+                int l = 0, r = elements.size();
+                while (l < r) {
+                    int mid = (l + r) >>> 1;
+                    if (elements.get(mid) > x) r = mid;
+                    else l = mid + 1;
+                }
+                return l;
+            }
+
+            // merge two nodes
+            static Node merge(Node a, Node b) {
+                Node res = new Node();
+                int i = 0, j = 0;
+
+                while (i < a.elements.size() && j < b.elements.size()) {
+                    if (a.elements.get(i) <= b.elements.get(j)) {
+                        res.elements.add(a.elements.get(i++));
+                    } else {
+                        res.elements.add(b.elements.get(j++));
+                    }
+                }
+
+                while (i < a.elements.size()) {
+                    res.elements.add(a.elements.get(i++));
+                }
+                while (j < b.elements.size()) {
+                    res.elements.add(b.elements.get(j++));
+                }
+
+                long sum = 0;
+                for (long v : res.elements) {
+                    sum += v;
+                    res.prefix.add(sum);
+                }
+
+                return res;
+            }
+        }
+
+        private final Node[] segArr;
+        private final int N;
+
+        public SegmentTreeMergeSort(int n) {
+            this.N = n;
+            this.segArr = new Node[4 * n + 1];
+        }
+
+        public void build(int[] arr) {
+            build(Arrays.stream(arr).asLongStream().toArray());
+        }
+
+        public void build(long[] arr) {
+            build(0, 0, N - 1, arr);
+        }
+
+        public QueryResult query(int l, int r, long x, NodeQuery strategy) {
+            return query(0, 0, N - 1, l, r, x, strategy);
+        }
+
+        private void build(int ind, int low, int high, long[] arr) {
+            if (low == high) {
+                segArr[ind] = new Node(arr[low]);
+                return;
+            }
+            int mid = low + (high - low) / 2;
+
+            build(2 * ind + 1, low, mid, arr);
+            build(2 * ind + 2, mid + 1, high, arr);
+
+            segArr[ind] = Node.merge(segArr[2 * ind + 1], segArr[2 * ind + 2]);
+        }
+
+        QueryResult query(int ind, int low, int high, int l, int r, long x, NodeQuery strategy) {
+            // No Overlap
+            if (high < l || low > r) {
+                return QueryResult.empty();
+            }
+
+            // Completely overlap
+            if (low >= l && high <= r) {
+                return strategy.apply(segArr[ind], x);
+            }
+
+            // Partially overlap
+            int mid = low + (high - low) / 2;
+
+            QueryResult left = query(2 * ind + 1, low, mid, l, r, x, strategy);
+            QueryResult right = query(2 * ind + 2, mid + 1, high, l, r, x, strategy);
+            return left.merge(right);
+        }
+
+        static class QueryResult {
+            long sum;
+            int count;
+
+            QueryResult(long sum, int count) {
+                this.sum = sum;
+                this.count = count;
+            }
+
+            static QueryResult empty() {
+                return new QueryResult(0, 0);
+            }
+
+            QueryResult merge(QueryResult other) {
+                this.sum += other.sum;
+                this.count += other.count;
+                return this;
+            }
+        }
+
+        @FunctionalInterface
+        interface NodeQuery {
+            QueryResult apply(Node node, long x);
         }
     }
 
@@ -1426,8 +1664,8 @@ public class Main {
                 adj.add(new ArrayList<>());
 
             for (int[] e : edges) {
-                adj.get(e[0]).add(new int[] { e[1], e[2] });
-                adj.get(e[1]).add(new int[] { e[0], e[2] });
+                adj.get(e[0]).add(new int[]{e[1], e[2]});
+                adj.get(e[1]).add(new int[]{e[0], e[2]});
             }
 
             return adj;
@@ -1438,8 +1676,8 @@ public class Main {
             int[] dis = new int[n];
             Arrays.fill(dis, (int) 1e9);
 
-            Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
-            pq.add(new int[] { src, 0 });
+            Queue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
+            pq.add(new int[]{src, 0});
             dis[src] = 0;
 
             while (!pq.isEmpty()) {
@@ -1453,7 +1691,7 @@ public class Main {
 
                     if (dis[v] > dis[u] + currCost) {
                         dis[v] = dis[u] + currCost;
-                        pq.add(new int[] { v, dis[v] });
+                        pq.add(new int[]{v, dis[v]});
                     }
                 }
             }
@@ -1466,7 +1704,7 @@ public class Main {
             Arrays.fill(dis, (int) 1e9);
 
             Queue<int[]> pq = new LinkedList<>();
-            pq.add(new int[] { src, k, 0 });
+            pq.add(new int[]{src, k, 0});
             dis[src] = 0;
 
             while (!pq.isEmpty()) {
@@ -1480,7 +1718,7 @@ public class Main {
 
                     if (kk > 0 && dis[v] > dis[u] + currCost) {
                         dis[v] = dis[u] + currCost;
-                        pq.add(new int[] { v, kk - 1 });
+                        pq.add(new int[]{v, kk - 1});
                     }
                 }
             }
@@ -1492,8 +1730,8 @@ public class Main {
             int[] dis = new int[n];
             Arrays.fill(dis, Integer.MAX_VALUE);
 
-            Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
-            pq.add(new int[] { 0, src });
+            Queue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+            pq.add(new int[]{0, src});
             dis[src] = 0;
 
             while (!pq.isEmpty()) {
@@ -1508,11 +1746,139 @@ public class Main {
 
                     if (dis[v] > dis[u] + currCost) {
                         dis[v] = dis[u] + currCost;
-                        pq.add(new int[] { dis[v], v });
+                        pq.add(new int[]{dis[v], v});
                     }
                 }
             }
             return dis;
+        }
+    }
+
+    static class Manacher {
+        private final String modifiedStr;
+        private final int N;
+        private final int[] P;
+
+        Manacher(String s) {
+            modifiedStr = buildWithSpecialChar(s);
+            N = modifiedStr.length();
+            P = build(modifiedStr, N);
+        }
+
+        private String buildWithSpecialChar(String s) {
+            StringBuilder sb = new StringBuilder();
+            for (char ch : s.toCharArray()) {
+                sb.append("#").append(ch);
+            }
+            sb.append("#");
+            return sb.toString();
+        }
+
+        private int[] build(String string, int n) {
+            int[] P = new int[n];
+            int maxPBoundLeft = 0;
+            int maxPBoundRight = -1;
+            for (int i = 0; i < N; i++) {
+                int lenFromCurrCenter = 0;
+                if (i < maxPBoundRight) {
+                    lenFromCurrCenter = Math.min(maxPBoundRight - i, P[maxPBoundLeft + maxPBoundRight - i]);
+                }
+                while (isInsideBoundary(i, lenFromCurrCenter) && modifiedStr.charAt(i - lenFromCurrCenter) == modifiedStr.charAt(i + lenFromCurrCenter)) {
+                    lenFromCurrCenter++;
+                }
+                if (i + lenFromCurrCenter >= maxPBoundRight) {
+                    maxPBoundLeft = i - lenFromCurrCenter;
+                    maxPBoundRight = i + lenFromCurrCenter;
+                }
+                P[i] = lenFromCurrCenter;
+            }
+            return P;
+        }
+
+        private boolean isInsideBoundary(int i, int lenFromCurrCenter) {
+            return i - lenFromCurrCenter >= 0 && lenFromCurrCenter + i < N;
+        }
+
+        public String getLongestPalindromeSubString() {
+            int maxLen = 0;
+            int center = 0;
+            for (int i = 0; i < N; i++) {
+                if (P[i] > maxLen) {
+                    maxLen = P[i];
+                    center = i;
+                }
+            }
+            return modifiedStr.substring(center - maxLen + 1, center + maxLen).replaceAll("#", "");
+        }
+    }
+
+    static class RollingHash {
+        private final long MOD;
+        private final long P;
+        private long hash;
+        private final long MAX_POW;
+
+        public RollingHash(long windowSize, long p, long MOD) {
+            this.P = p;
+            this.MOD = MOD;
+            this.MAX_POW = modPower(P, windowSize - 1, MOD);
+        }
+
+        public long getHash() {
+            return hash;
+        }
+
+        public void addLast(long ele) {
+            this.hash = ((this.hash * P) % MOD + ele % MOD) % MOD;
+        }
+
+        public void removeFirst(long ele) {
+            this.hash = (this.hash - (MAX_POW * ele) % MOD + MOD) % MOD;
+        }
+
+        // extra stuffs
+        protected long modPower(long x, long y, long mod) {
+            long res = 1;
+            x %= mod;
+            while (y > 0) {
+                if ((y & 1) != 0) {
+                    res = (res * x) % mod;
+                }
+                x = (x * x) % mod;
+                y >>= 1;
+            }
+            return res;
+        }
+    }
+
+    static class DoubleRollingHash extends RollingHash {
+        private final long MOD;
+        private final long P;
+        private long hash;
+        private final long MAX_POW;
+
+        public DoubleRollingHash(long windowSize, long p1, long p2, long MOD_1, long MOD_2) {
+            super(windowSize, p1, MOD_1);
+            this.MOD = MOD_2;
+            this.P = p2;
+            this.MAX_POW = modPower(P, windowSize - 1, MOD);
+        }
+
+        @Override
+        public void addLast(long ele) {
+            super.addLast(ele);
+            this.hash = ((this.hash * P) % MOD + ele % MOD) % MOD;
+        }
+
+        @Override
+        public void removeFirst(long ele) {
+            super.removeFirst(ele);
+            this.hash = (this.hash - (MAX_POW * ele) % MOD + MOD) % MOD;
+        }
+
+        @Override
+        public long getHash() {
+            return (super.getHash() << 32) | this.hash;
         }
     }
 }
